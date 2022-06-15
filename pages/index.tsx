@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 
 import Header from "../components/Header";
+import Contact from "../components/Contact";
 import ProductCard from "../components/ProductCard";
 
 const LandingPage: NextPage = () => {
@@ -23,6 +24,7 @@ const LandingPage: NextPage = () => {
           ))}
         </ul>
       </main>
+      <Contact />
     </>
   );
 };
