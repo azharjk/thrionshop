@@ -18,11 +18,13 @@ const ProductCard: React.FunctionComponent<ProductCardProps> = ({
       <div className="w-full flex justify-center">
         <div className="w-full px-4 max-w-sm">
           <Image
+            loader={() => src}
             src={src}
             width={300}
             height={300}
             layout="responsive"
             priority
+            unoptimized
             alt={alt}
           />
         </div>
