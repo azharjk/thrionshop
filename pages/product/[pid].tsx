@@ -1,22 +1,31 @@
+import { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
-import { useRouter } from "next/router";
 
 import { Carousel } from "react-responsive-carousel";
-
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
+import { AxiosInstance } from "../../utils/axios";
+import { Product, ProductDetailResponse } from "../../interfaces/product";
 import MainLayout from "../../components/MainLayout";
 
-const ProductDetail = () => {
-  // FIXME: Static data
-  const images: string[] = [
-    "https://dummyimage.com/600x500/000/fff",
-    "https://dummyimage.com/700x600/000/fff",
-    "https://dummyimage.com/800x900/000/fff",
-  ];
+interface ProductDetailProps {
+  product: Product;
+}
 
-  const router = useRouter();
-  const { pid } = router.query;
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const { data } = await (
+    await AxiosInstance()
+  ).get<ProductDetailResponse>(`/products/${params?.pid}`);
+
+  return {
+    props: {
+      product: data.data,
+    },
+  };
+};
+
+const ProductDetail: NextPage<ProductDetailProps> = ({ product }) => {
+  const { title, description, price_html, images } = product;
 
   return (
     <MainLayout>
@@ -25,17 +34,17 @@ const ProductDetail = () => {
           <div>
             <div className="mb-3 px-4 pt-4">
               <Carousel showThumbs={false}>
-                {images.map((imageSrc, idx) => (
+                {images.map(({ src, alt }, idx) => (
                   <div
                     key={idx}
                     className="w-100 h-[400px] md:h-[500px] relative"
                   >
                     <Image
-                      loader={() => imageSrc}
+                      loader={() => src}
                       unoptimized
-                      src={imageSrc}
+                      src={src}
                       layout="fill"
-                      alt="Product detail image alt"
+                      alt={alt}
                     />
                   </div>
                 ))}
@@ -43,16 +52,12 @@ const ProductDetail = () => {
             </div>
           </div>
           <div className="mt-4 px-4">
-            <h1 className="font-semibold">product title - {pid}</h1>
+            <h1 className="font-semibold">{title}</h1>
             <div className="mt-2">
-              <span>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quis,
-                impedit! Lorem ipsum dolor sit amet consectetur adipisicing
-                elit. Alias, unde.
-              </span>
+              <span>{description}</span>
             </div>
             <div className="mt-2">
-              <span className="font-semibold text-2xl">Rp300.000,00</span>
+              <span className="font-semibold text-2xl">{price_html}</span>
             </div>
             <button className="w-full border mt-4 py-2 uppercase font-semibold">
               Buy now
