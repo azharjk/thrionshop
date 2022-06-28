@@ -4,9 +4,9 @@ import Image from "next/image";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
-import { AxiosInstance } from "../../utils/axios";
-import { Product, ProductDetailResponse } from "../../interfaces/product";
-import MainLayout from "../../components/MainLayout";
+import { AxiosInstance } from "../../../utils/axios";
+import { Product, ProductDetailResponse } from "../../../interfaces/product";
+import MainLayout from "../../../components/MainLayout";
 
 interface ProductDetailProps {
   product: Product;
