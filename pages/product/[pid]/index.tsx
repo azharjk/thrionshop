@@ -1,5 +1,6 @@
 import { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -25,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 };
 
 const ProductDetail: NextPage<ProductDetailProps> = ({ product }) => {
-  const { title, description, price_html, images } = product;
+  const { id, title, description, price_html, images } = product;
 
   return (
     <MainLayout>
@@ -34,9 +35,9 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product }) => {
           <div>
             <div className="mb-3 px-4 pt-4">
               <Carousel showThumbs={false}>
-                {images.map(({ src, alt }, idx) => (
+                {images.map(({ src, alt }) => (
                   <div
-                    key={idx}
+                    key={id}
                     className="w-100 h-[400px] md:h-[500px] relative"
                   >
                     <Image
@@ -59,9 +60,14 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product }) => {
             <div className="mt-2">
               <span className="font-semibold text-2xl">{price_html}</span>
             </div>
-            <button className="w-full border mt-4 py-2 uppercase font-semibold">
-              Buy now
-            </button>
+            <Link href={`/product/${id}/checkout`}>
+              <a
+                className="block text-center w-full border mt-4 py-2 uppercase font-semibold"
+                href={`/product/${id}/checkout`}
+              >
+                Buy now
+              </a>
+            </Link>
           </div>
         </div>
       </div>
