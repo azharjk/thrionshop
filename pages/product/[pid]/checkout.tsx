@@ -8,6 +8,7 @@ import { AxiosInstance } from "../../../utils/axios";
 import { toRupiah } from "../../../utils/currency";
 import MainLayout from "../../../components/MainLayout";
 import { Product, ProductDetailResponse } from "../../../interfaces/product";
+import HorizontalProductCard from "../../../components/HorizontalProductCard";
 
 interface CheckoutProps {
   product: Product;
@@ -80,25 +81,12 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
               {title}
             </h1>
           </header>
-          <div className="flex gap-3">
-            <div>
-              <Image
-                loader={() => images[0].src}
-                unoptimized
-                src={images[0].src}
-                width={100}
-                height={100}
-                alt={images[0].alt}
-              />
-            </div>
-            <div className="flex flex-col justify-between w-full">
-              <span>{title}</span>
-              <div className="flex justify-end items-center gap-2">
-                <span className="font-semibold text-lg">{price_html}</span>
-                <span>&times;1</span>
-              </div>
-            </div>
-          </div>
+          <HorizontalProductCard
+            src={images[0].src}
+            alt={images[0].alt}
+            title={title}
+            price_html={price_html}
+          />
           <div className="mt-4">
             <form
               onSubmit={handleSubmit(onSubmit)}
