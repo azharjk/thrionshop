@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
+import Link from "next/link";
 
 import { useForm, SubmitHandler } from "react-hook-form";
+import Modal from "react-modal";
 
 import { OrderDetailResponse, PaymentMethod } from "../../../interfaces/order";
 import { AxiosInstance } from "../../../utils/axios";
@@ -40,9 +42,12 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   };
 };
 
+Modal.setAppElement("#__next");
+
 const Checkout: NextPage<CheckoutProps> = ({ product }) => {
   const { id, title, price, price_html, images } = product;
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [prices, setPrices] = useState<PriceItem[]>([
     {
       title: "Product price",
@@ -84,11 +89,61 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
       await AxiosInstance()
     ).post<OrderDetailResponse>("/orders", body);
 
-    console.log(data);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
     <MainLayout>
+      {/* FIXME: Make modal size responsive but in a better way */}
+      <Modal
+        className="absolute text-white p-4 rounded-sm shadow-lg bg-slate-700 top-[3rem] left-[2rem] right-[2rem] sm:left-[10rem] sm:right-[10rem]"
+        isOpen={isModalOpen}
+      >
+        <header>
+          <h1 className="text-white text-lg text-center">
+            Yeay, successfully purchased product:{" "}
+            <span className="font-semibold">Air Jordan 7x</span>
+          </h1>
+        </header>
+        <div className="mt-6 flex flex-col gap-2">
+          <div className="flex justify-between">
+            <span className="uppercase">Checkout ID</span>
+            <span className="font-semibold">1</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="uppercase">Product</span>
+            <span className="font-semibold">Air Jordan 7x</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="uppercase">Payment method</span>
+            <span className="font-semibold">TRANSFER</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="uppercase">Total price</span>
+            <span className="font-semibold">Rp170.000</span>
+          </div>
+        </div>
+        <div className="mt-6">
+          <button
+            onClick={closeModal}
+            className="block w-full border mt-2 py-2 uppercase font-semibold rounded-sm"
+          >
+            Okay
+          </button>
+          <Link href="/">
+            <a
+              className="block w-full bg-slate-500 border mt-2 py-2 uppercase font-semibold rounded-sm text-center"
+              href="/"
+            >
+              See other products
+            </a>
+          </Link>
+        </div>
+      </Modal>
       <div className="flex justify-center w-full mb-8">
         <div className="p-4 w-full max-w-[550px] sm:border sm:mt-[50px]">
           <header className="mb-4">
