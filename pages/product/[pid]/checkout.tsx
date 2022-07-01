@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
-import Image from "next/image";
 
 import { useForm, SubmitHandler } from "react-hook-form";
 
+import { OrderDetailResponse, PaymentMethod } from "../../../interfaces/order";
 import { AxiosInstance } from "../../../utils/axios";
 import { toRupiah } from "../../../utils/currency";
 import MainLayout from "../../../components/MainLayout";
@@ -19,11 +19,6 @@ interface PriceItem {
   title: string;
   amount: number;
   amountHtml: string;
-}
-
-enum PaymentMethod {
-  COD = "cash-on-delivery",
-  TRANSFER = "transfer",
 }
 
 interface CheckoutForm {
@@ -46,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 };
 
 const Checkout: NextPage<CheckoutProps> = ({ product }) => {
-  const { title, price, price_html, images } = product;
+  const { id, title, price, price_html, images } = product;
 
   const [prices, setPrices] = useState<PriceItem[]>([
     {
@@ -59,8 +54,6 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
 
   const { handleSubmit, register } = useForm<CheckoutForm>();
 
-  const onSubmit: SubmitHandler<CheckoutForm> = (data) => console.log(data);
-
   const sumTotalPrice = () => {
     let sum = 0;
 
@@ -69,6 +62,29 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
     });
 
     return sum;
+  };
+
+  const onSubmit: SubmitHandler<CheckoutForm> = async ({
+    name,
+    whatsAppNumber,
+    address,
+    paymentMethod,
+  }) => {
+    const body = {
+      product_id: id,
+      customer_name: name,
+      whatsapp_number: whatsAppNumber,
+      address,
+      total_price: sumTotalPrice(),
+      payment_method: paymentMethod,
+    };
+
+    // FIXME: Check if the request is not succeeded
+    const { data } = await (
+      await AxiosInstance()
+    ).post<OrderDetailResponse>("/orders", body);
+
+    console.log(data);
   };
 
   return (
@@ -130,10 +146,8 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
                   Payment method
                 </label>
                 <select id="payment-method" {...register("paymentMethod")}>
-                  <option value="cash-on-delivery">
-                    Cash On Delivery (COD)
-                  </option>
-                  <option value="transfer">Transfer</option>
+                  <option value="COD">Cash On Delivery (COD)</option>
+                  <option value="TRANSFER">Transfer</option>
                 </select>
               </div>
               <div className="mt-2 border p-2">
