@@ -5,6 +5,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 
 import { OrderDetailResponse, PaymentMethod } from "../../../interfaces/order";
 import { Product, ProductDetailResponse } from "../../../interfaces/product";
+import { CheckoutReceipt } from "../../../interfaces/checkout";
 import { AxiosInstance } from "../../../utils/axios";
 import { toRupiah } from "../../../utils/currency";
 import MainLayout from "../../../components/MainLayout";
@@ -45,6 +46,7 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
   const { id, title, price, price_html, images } = product;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [checkoutReceipt, setCheckoutReceipt] = useState<CheckoutReceipt>();
   const [prices, setPrices] = useState<PriceItem[]>([
     {
       title: "Product price",
@@ -86,6 +88,13 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
       await AxiosInstance()
     ).post<OrderDetailResponse>("/orders", body);
 
+    setCheckoutReceipt({
+      checkoutId: data.data.id,
+      productName: data.data.product.title,
+      paymentMethod: paymentMethod,
+      totalPriceHtml: toRupiah(sumTotalPrice()),
+    });
+
     setIsModalOpen(true);
   };
 
@@ -95,7 +104,13 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
 
   return (
     <MainLayout>
-      <CheckoutModal isOpen={isModalOpen} closeHandler={closeModal} />
+      {checkoutReceipt ? (
+        <CheckoutModal
+          isOpen={isModalOpen}
+          closeHandler={closeModal}
+          checkoutReceipt={checkoutReceipt}
+        />
+      ) : null}
       <div className="flex justify-center w-full mb-8">
         <div className="p-4 w-full max-w-[550px] sm:border sm:mt-[50px]">
           <header className="mb-4">

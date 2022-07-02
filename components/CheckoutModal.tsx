@@ -2,9 +2,13 @@ import { NextPage } from "next";
 import Link from "next/link";
 import ReactModal from "react-modal";
 
+import { CheckoutReceipt } from "../interfaces/checkout";
+
 interface CheckoutModalProps {
   isOpen: boolean;
   closeHandler: () => void;
+  // FIXME: This fix the typescript parser
+  checkoutReceipt: CheckoutReceipt | undefined;
 }
 
 ReactModal.setAppElement("#__next");
@@ -12,7 +16,11 @@ ReactModal.setAppElement("#__next");
 const CheckoutModal: NextPage<CheckoutModalProps> = ({
   isOpen,
   closeHandler,
+  checkoutReceipt,
 }) => {
+  const { checkoutId, productName, paymentMethod, totalPriceHtml } =
+    checkoutReceipt!;
+
   return (
     <ReactModal
       className="absolute p-4 top-0 bottom-0 left-0 right-0"
@@ -22,25 +30,25 @@ const CheckoutModal: NextPage<CheckoutModalProps> = ({
         <header>
           <h1 className="text-white text-lg text-center">
             Yeay, successfully purchased product:{" "}
-            <span className="font-semibold">Air Jordan 7x</span>
+            <span className="font-semibold">{productName}</span>
           </h1>
         </header>
         <div className="mt-6 flex flex-col gap-2">
           <div className="flex justify-between">
             <span className="uppercase">Checkout ID</span>
-            <span className="font-semibold">1</span>
+            <span className="font-semibold">{checkoutId}</span>
           </div>
           <div className="flex justify-between">
             <span className="uppercase">Product</span>
-            <span className="font-semibold">Air Jordan 7x</span>
+            <span className="font-semibold">{productName}</span>
           </div>
           <div className="flex justify-between">
             <span className="uppercase">Payment method</span>
-            <span className="font-semibold">TRANSFER</span>
+            <span className="font-semibold">{paymentMethod}</span>
           </div>
           <div className="flex justify-between">
             <span className="uppercase">Total price</span>
-            <span className="font-semibold">Rp170.000</span>
+            <span className="font-semibold">{totalPriceHtml}</span>
           </div>
         </div>
         <div className="mt-6">
