@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
 
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -70,6 +70,7 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
   ]);
 
   const { handleSubmit, register } = useForm<CheckoutForm>();
+  const [whatsAppNumber, setWhatsAppNumber] = useState("");
 
   const sumTotalPrice = () => {
     let sum = 0;
@@ -81,9 +82,24 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
     return sum;
   };
 
+  const onWhatsAppNumberChange = (e: SyntheticEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value;
+    const regex = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g;
+
+    if (value.length === 0) {
+      setWhatsAppNumber(value);
+      return;
+    }
+
+    if (!regex.test(value)) {
+      return;
+    }
+
+    setWhatsAppNumber(e.currentTarget.value);
+  };
+
   const onSubmitWithConfirmation: SubmitHandler<CheckoutForm> = async ({
     name,
-    whatsAppNumber,
     address,
     paymentMethod,
   }) => {
@@ -171,8 +187,9 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
                 <input
                   {...register("whatsAppNumber", {
                     required: true,
-                    pattern: /^\d+$/,
                   })}
+                  onChange={onWhatsAppNumberChange}
+                  value={whatsAppNumber}
                   type="text"
                   id="wa-number"
                   placeholder="Enter your WhatsApp number"
