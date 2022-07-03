@@ -11,6 +11,7 @@ import { toRupiah } from "../../../utils/currency";
 import MainLayout from "../../../components/MainLayout";
 import HorizontalProductCard from "../../../components/HorizontalProductCard";
 import CheckoutModal from "../../../components/CheckoutModal";
+import CheckoutConfirmationModal from "../../../components/CheckoutConfirmationModal";
 
 interface CheckoutProps {
   product: Product;
@@ -30,6 +31,15 @@ interface CheckoutForm {
   paymentMethod: PaymentMethod;
 }
 
+interface CheckoutRequest {
+  product_id: number;
+  customer_name: string;
+  whatsapp_number: string;
+  address: string;
+  total_price: number;
+  payment_method: PaymentMethod;
+}
+
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const { data } = await (
     await AxiosInstance()
@@ -44,6 +54,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
 const Checkout: NextPage<CheckoutProps> = ({ product }) => {
   const { id, title, price, price_html, images } = product;
+
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [checkoutRequest, setCheckoutRequest] = useState<CheckoutRequest>();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [checkoutReceipt, setCheckoutReceipt] = useState<CheckoutReceipt>();
@@ -68,30 +81,39 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
     return sum;
   };
 
-  const onSubmit: SubmitHandler<CheckoutForm> = async ({
+  const onSubmitWithConfirmation: SubmitHandler<CheckoutForm> = async ({
     name,
     whatsAppNumber,
     address,
     paymentMethod,
   }) => {
-    const body = {
+    setCheckoutRequest({
       product_id: id,
       customer_name: name,
       whatsapp_number: whatsAppNumber,
       address,
       total_price: sumTotalPrice(),
       payment_method: paymentMethod,
-    };
+    });
+    setShowConfirmationModal(true);
+  };
+
+  const closeConfirmationModal = () => {
+    setShowConfirmationModal(false);
+  };
+
+  const commitCheckout = async () => {
+    closeConfirmationModal();
 
     // FIXME: Check if the request is not succeeded
     const { data } = await (
       await AxiosInstance()
-    ).post<OrderDetailResponse>("/orders", body);
+    ).post<OrderDetailResponse>("/orders", checkoutRequest!);
 
     setCheckoutReceipt({
       checkoutId: data.data.id,
       productName: data.data.product.title,
-      paymentMethod: paymentMethod,
+      paymentMethod: data.data.payment_method,
       totalPriceHtml: toRupiah(sumTotalPrice()),
     });
 
@@ -111,6 +133,11 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
           checkoutReceipt={checkoutReceipt}
         />
       ) : null}
+      <CheckoutConfirmationModal
+        isOpen={showConfirmationModal}
+        onApprove={commitCheckout}
+        onCancel={closeConfirmationModal}
+      />
       <div className="flex justify-center w-full mb-8">
         <div className="p-4 w-full max-w-[550px] sm:border sm:mt-[50px]">
           <header className="mb-4">
@@ -127,7 +154,7 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
           />
           <div className="mt-4">
             <form
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(onSubmitWithConfirmation)}
               className="flex flex-col gap-3"
             >
               <div className="flex flex-col">
