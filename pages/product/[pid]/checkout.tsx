@@ -12,6 +12,7 @@ import MainLayout from "../../../components/MainLayout";
 import HorizontalProductCard from "../../../components/HorizontalProductCard";
 import CheckoutModal from "../../../components/CheckoutModal";
 import CheckoutConfirmationModal from "../../../components/CheckoutConfirmationModal";
+import LoadingCheckoutReceipt from "../../../components/LoadingCheckoutReceipt";
 
 interface CheckoutProps {
   product: Product;
@@ -59,7 +60,11 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
   const [checkoutRequest, setCheckoutRequest] = useState<CheckoutRequest>();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isCheckoutReceiptLoading, setIsCheckoutReceiptLoading] =
+    useState(false);
   const [checkoutReceipt, setCheckoutReceipt] = useState<CheckoutReceipt>();
+
   const [prices, setPrices] = useState<PriceItem[]>([
     {
       title: "Product price",
@@ -121,10 +126,14 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
   const commitCheckout = async () => {
     closeConfirmationModal();
 
+    setIsCheckoutReceiptLoading(true);
+
     // FIXME: Check if the request is not succeeded
     const { data } = await (
       await AxiosInstance()
     ).post<OrderDetailResponse>("/orders", checkoutRequest!);
+
+    setIsCheckoutReceiptLoading(false);
 
     setCheckoutReceipt({
       checkoutId: data.data.id,
@@ -155,7 +164,8 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
         onCancel={closeConfirmationModal}
       />
       <div className="flex justify-center w-full mb-8">
-        <div className="p-4 w-full max-w-[550px] sm:border sm:mt-[50px]">
+        <div className="p-4 w-full max-w-[550px] sm:border sm:mt-[50px] relative">
+          {isCheckoutReceiptLoading ? <LoadingCheckoutReceipt /> : null}
           <header className="mb-4">
             <h1>
               <span className="uppercase font-semibold">Checkout</span> -{" "}
