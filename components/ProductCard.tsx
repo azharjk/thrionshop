@@ -16,13 +16,13 @@ const ProductCard: React.FunctionComponent<ProductCardProps> = ({
   return (
     <div>
       <div className="w-full flex justify-center">
-        <div className="w-full px-4 max-w-sm">
+        <div className="w-full px-4 max-w-sm flex justify-center">
           <Image
             loader={() => src}
             src={src}
             width={300}
             height={300}
-            layout="responsive"
+            // layout="responsive"
             priority
             unoptimized
             alt={alt}
