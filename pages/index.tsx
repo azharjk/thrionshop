@@ -49,6 +49,16 @@ const LandingPage: NextPage<LandingPageProps> = ({ displayProducts }) => {
           ))}
         </ul>
       </main>
+      <div className="flex justify-center my-8">
+        <Link href="/product">
+          <a
+            href="/product"
+            className="border mt-2 px-4 py-2 uppercase font-semibold"
+          >
+            See all products
+          </a>
+        </Link>
+      </div>
     </MainLayout>
   );
 };

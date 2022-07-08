@@ -25,7 +25,7 @@ const CheckoutConfirmationModal: NextPage<CheckoutConfirmationModalProps> = ({
         </header>
         <button
           onClick={onApprove}
-          className="block w-full bg-slate-500  border mt-2 py-2 uppercase font-semibold rounded-sm"
+          className="block w-full bg-slate-500 border mt-2 py-2 uppercase font-semibold rounded-sm"
         >
           Yes
         </button>
