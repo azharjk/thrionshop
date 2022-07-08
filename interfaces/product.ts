@@ -7,8 +7,6 @@ export interface Product {
   thumbnail: string;
   thumbnail_alt: string;
   images: ProductImage[];
-  created_at: string;
-  updated_at: string;
 }
 
 export interface ProductImage {
