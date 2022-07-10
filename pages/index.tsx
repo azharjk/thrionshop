@@ -18,7 +18,7 @@ interface LandingPageProps {
 export const getServerSideProps: GetServerSideProps = async () => {
   const { data } = await (
     await AxiosInstance()
-  ).get<DisplayProductsResponse>("/display-products");
+  ).get<DisplayProductsResponse>("/cms/display-products");
 
   return {
     props: {
