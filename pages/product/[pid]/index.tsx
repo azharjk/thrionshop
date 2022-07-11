@@ -16,7 +16,7 @@ interface ProductDetailProps {
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const { data } = await (
     await AxiosInstance()
-  ).get<ProductDetailResponse>(`/products/${params?.pid}`);
+  ).get<ProductDetailResponse>(`/cms/products/${params?.pid}`);
 
   return {
     props: {
