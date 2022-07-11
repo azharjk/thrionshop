@@ -44,7 +44,7 @@ interface CheckoutRequest {
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const { data } = await (
     await AxiosInstance()
-  ).get<ProductDetailResponse>(`/products/${params?.pid}`);
+  ).get<ProductDetailResponse>(`/cms/products/${params?.pid}`);
 
   return {
     props: {
@@ -131,7 +131,7 @@ const Checkout: NextPage<CheckoutProps> = ({ product }) => {
     // FIXME: Check if the request is not succeeded
     const { data } = await (
       await AxiosInstance()
-    ).post<OrderDetailResponse>("/orders", checkoutRequest!);
+    ).post<OrderDetailResponse>("/cms/orders", checkoutRequest!);
 
     setIsCheckoutReceiptLoading(false);
 
